@@ -1,0 +1,156 @@
+public with sharing class SPAProductsPDFController {
+    // Form fields
+    public List<SPA_Family__c> spaFamilyRecordList {get;set;}
+    public List<SPA_Family__c> sapFamilyRecord {get;set;}
+    public Map<String,List<SPA_Line__c>> familyIdSpaLineRecordMap {get;set;}
+    public Map<String,List<SPA_Line__c>> discountGroupIdSpaLineRecordMap {get;set;}
+    public List<SPA_Line__c> spaLineRecordList {get;set;}
+    public String spaHeaderId    { 
+        get {
+            return ApexPages.currentPage().getParameters().get('spaHeaderId');
+        } 
+        set; 
+    }
+    public Boolean isDealer {
+        get {
+            return ApexPages.currentPage().getParameters().get('type') == 'dealer';
+        }
+        set;
+    }
+    public String discountType {
+        get {
+            return ApexPages.currentPage().getParameters().get('discountType');
+        }
+        set;
+    }
+    public SPA_Header__c spaHeaderData {
+        get {
+            SPA_Header__c spData = new SPA_Header__c();
+            if(spaHeaderId != null){
+                spData = [
+                    SELECT Id, Name, Project_Name__c, Effective_Start_Date__c, Effective_End_Date__c, 
+                    Contract_Number__c, End_Customer__r.Name, Order_Type__c, SPIFF_To_Dealer__c, Contract_Type__c, 
+                    Invoice_Destination__c, Price_Zone__c, Opportunity__r.Name, Administration_Fee__c, Discount_Type__c, 
+                    Administration_Fee_Override__c, Payment_Terms__c, SPIFF_Eligible__c, Freight_On_Board__c, 
+                    Split_SPIFF__c, Currency__c, Dealer_Contact_1__r.Name, Primary_Sales_Person__c, 
+                    Dealer_Contact_2__r.Name, Dealer_Contact_3__r.Name, Rep_Group__c, 
+                    Rep_Group_Employee__c, Other_Contact_1__r.Name, Other_Contact_2__r.Name 
+                    FROM SPA_Header__c 
+                    WHERE Id =:spaHeaderId
+                ];
+            }
+            return spData;
+        }
+        set;
+    }
+    public List<SPA_Line__c> spaLines {
+        get {
+            List<SPA_Line__c> spaLinesData = new List<SPA_Line__c>();
+            if(spaHeaderId != null){
+                spaLinesData = [
+                    SELECT Id, Name, End_User_Discount_Percentage__c, Dealer_Discount_Percentage__c, 
+                    Dealer_SPIFF_Percentage__c, Other_SPIFF_Percentage__c, Dealer_Services_Fee__c, 
+                    Rep_Commission__c 
+                    FROM SPA_Line__c 
+                    WHERE SPA_Header__c  =:spaHeaderId
+                    AND Action_Source__c = 'SPA Products'
+                ];
+            }
+            return spaLinesData;
+        }
+        set;
+    }
+    public List<SPA_Discount_Group__c> sapTieredProducts {
+        get {
+            List<SPA_Discount_Group__c> spaData = new List<SPA_Discount_Group__c>();
+            if(spaHeaderId != null){
+                spaData = [
+                    SELECT Id, Group_Name__c, Name, 
+                        (
+                            SELECT Id, Amount_Range_From__c, Amount_Range_To__c , SPA_Discount_Group__r.Name, 
+                            (
+                                SELECT Id, Name, End_User_Discount_Percentage__c, Dealer_Discount_Percentage__c, 
+                                Dealer_SPIFF_Percentage__c, Other_SPIFF_Percentage__c, Dealer_Services_Fee__c, Rep_Commission__c 
+                                FROM SPA_Lines__r
+                            ) 
+                            FROM SPA_Discount_Group_Ranges__r
+                        ) 
+                    FROM SPA_Discount_Group__c 
+                    WHERE SPA_Header__c =:spaHeaderId
+                ];
+            }
+            return spaData;
+        }
+        set;
+    }
+    public List<SPA_Discount_Group__c> sapTieredItems {
+        get {
+            List<SPA_Discount_Group__c> spaData = new List<SPA_Discount_Group__c>();
+            if(spaHeaderId != null){
+                spaData = [
+                    SELECT Id, Group_Name__c, Name, 
+                        (
+                            SELECT Id, Amount_Range_From__c, Amount_Range_To__c , SPA_Discount_Group__r.Name, 
+                            (
+                                SELECT Id, Name, End_User_Discount_Percentage__c, Dealer_Discount_Percentage__c, 
+                                Dealer_SPIFF_Percentage__c, Other_SPIFF_Percentage__c, Dealer_Services_Fee__c, Rep_Commission__c, SPA_Family__r.Name
+                                FROM SPA_Lines__r
+                            ) 
+                            FROM SPA_Discount_Group_Ranges__r
+                        ) 
+                    FROM SPA_Discount_Group__c 
+                    WHERE SPA_Header__c =:spaHeaderId
+                ];
+            }
+            return spaData;
+        }
+        set;
+    }
+    public SPAProductsPDFController(){
+        getSpaHeaderRecord(spaHeaderId);
+         List<id> spaDicountgroupIdList = New List<id>();
+        for(SPA_Discount_Group__c sdg : [Select id from SPA_Discount_Group__c where SPA_Header__c =: spaHeaderId]){
+            spaDicountgroupIdList.add(sdg.id);
+        }
+        getSpaLineRecordsForDiscountGroup(spaDicountgroupIdList);
+    }
+    
+    public void getSpaHeaderRecord(Id spaHeaderId){
+        spaFamilyRecordList = [Select Id,Name,End_User_Discount_Percentage__c,Dealer_Discount_Percentage__c,Dealer_SPIFF_Percentage__c,Dealer_Services_Fee__c,Rep_Commission__c,Other_SPIFF_Percentage__c FROM SPA_Family__c where SPA_Header__c =: spaHeaderId];
+        List<id> familyIdList = New List<Id>();
+        for(SPA_Family__c sfc : spaFamilyRecordList){
+            familyIdList.add(sfc.id);
+        } 
+         System.debug('spaFamilyRecordList :'+spaFamilyRecordList);
+        getSpaLineRecords(familyIdList);       
+    }
+    public void getSpaLineRecords(List<Id> familyIdList){
+        familyIdSpaLineRecordMap = New Map<String,List<SPA_Line__c>>();
+         spaLineRecordList = [Select id,Name,SPA_Family__c,SPA_Family__r.Name,Other_SPIFF_Unit_Amount__c,Dealer_Discount_Percentage__c,Dealer_SPIFF_Unit_Amount__c,Dealer_Services_Fee__c,Dealer_SPIFF_Percentage__c,End_User_Discount_Percentage__c,Other_SPIFF_Percentage__c,Rep_Commission__c from SPA_Line__c Where SPA_Family__c IN:familyIdList];
+        for(SPA_Line__c spa : spaLineRecordList){
+            if(!familyIdSpaLineRecordMap.containsKey(spa.SPA_Family__r.Name)){
+                familyIdSpaLineRecordMap.put(spa.SPA_Family__r.Name,New List<SPA_Line__c>{spa});
+            }else{
+                List<SPA_Line__c> spaLineItemList = familyIdSpaLineRecordMap.get(spa.SPA_Family__r.Name);
+                spaLineItemList.add(spa);
+                familyIdSpaLineRecordMap.put(spa.SPA_Family__r.Name,spaLineItemList);
+            }
+        }
+        System.debug('familyIdSpaLineRecordMap : '+familyIdSpaLineRecordMap);
+    }
+
+    public void getSpaLineRecordsForDiscountGroup(List<Id> discountGroupIdList){
+        discountGroupIdSpaLineRecordMap = New Map<String,List<SPA_Line__c>>();
+        spaLineRecordList = [Select id,Name,SPA_Discount_Group_Range__r.SPA_Discount_Group__r.Name,SPA_Family__c,Dealer_Discount_Percentage__c,SPA_Discount_Group_Range__r.Amount_Range_From__c,SPA_Discount_Group_Range__r.Amount_Range_To__c,SPA_Discount_Group_Range__r.SPA_Discount_Group__c,Dealer_Services_Fee__c,Dealer_SPIFF_Percentage__c,End_User_Discount_Percentage__c,Other_SPIFF_Percentage__c,Rep_Commission__c,Dealer_SPIFF_Unit_Amount__c,Other_SPIFF_Unit_Amount__c from SPA_Line__c Where SPA_Discount_Group_Range__r.SPA_Discount_Group__c IN:discountGroupIdList];
+        for(SPA_Line__c spa : spaLineRecordList){
+            if(!discountGroupIdSpaLineRecordMap.containsKey(spa.SPA_Discount_Group_Range__r.SPA_Discount_Group__r.Name)){
+                discountGroupIdSpaLineRecordMap.put(spa.SPA_Discount_Group_Range__r.SPA_Discount_Group__r.Name,New List<SPA_Line__c>{spa});
+            }else{
+                List<SPA_Line__c> spaLineItemList = discountGroupIdSpaLineRecordMap.get(spa.SPA_Discount_Group_Range__r.SPA_Discount_Group__r.Name);
+                spaLineItemList.add(spa);
+                discountGroupIdSpaLineRecordMap.put(spa.SPA_Discount_Group_Range__r.SPA_Discount_Group__r.Name,spaLineItemList);
+            }
+        }
+        System.debug('discountGroupIdSpaLineRecordMap : '+discountGroupIdSpaLineRecordMap);
+    }
+}
