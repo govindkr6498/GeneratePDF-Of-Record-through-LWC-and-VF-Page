@@ -1,0 +1,778 @@
+<apex:page renderAs="pdf" controller="SPAProductsPDFController" applyHtmlTag="false" showHeader="false" cache="true" readOnly="true">
+    <apex:includeLightning />
+    <html>
+        <head>
+            <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+            
+        </head>
+        <body style="margin: auto 0;">
+           
+            <table style="width:100%;">
+                <tr>
+                    <td style="width:50%;">
+                        <img src="{!$Resource.Felloweslogo}" width="50%"/>
+                    </td>
+                    <td style="width:10%;">
+                        
+                    </td>
+                    <td style="width:40%;">
+                        <h4>Special Pricing Authorization</h4>
+                    </td>
+                </tr>
+            </table>
+            <br/><br/><br/>
+            <table style="width:100%;">
+                <tr>
+                    <td style="width:40%;">
+                        <p style="border:1px solid black; padding:10px;">
+                            XXXX - Fellowes Address --- XXXXXX <br/>
+                            XXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>
+                            XXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>
+                            XXXXXXXXXXXXXXXXXXXXXXXXXXX<br/>
+                            XXXXXXXXX
+                        </p>
+                    </td>
+                    <td style="width:10%;">
+                        
+                    </td>
+                    <td style="width:40%;">
+                        <p style="border:1px solid black; padding:10px;">
+                            CONTACT: XXXXXXXX<br/>
+                            999-999-999<br/>
+                            XXXXX@Fellowes.com
+                        </p>
+                    </td>
+                </tr>
+            </table>
+            <br/><br/><br/>
+            <table style="width:100%;border:1px solid black;" class="spa-header-detail" cellspacing="10" cellpadding="5">
+                <tr>
+                    <td style="width:20%;">
+                        <b>Number:</b>
+                    </td>
+                    <td style="width:30%;">
+                        {!spaHeaderData.Name}
+                    </td>
+                    <td style="width:20%;">
+                       <b> Name:</b>
+                    </td>
+                    <td style="width:30%;">
+                        {!spaHeaderData.Project_Name__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Effective:</b>
+                    </td>
+                    <td>
+                        <apex:outputText value="{0,date,MM/dd/yyyy} - {1,date,MM/dd/yyyy}">
+                            <apex:param value="{!spaHeaderData.Effective_Start_Date__c}" />
+                            <apex:param value="{!spaHeaderData.Effective_End_Date__c}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <b>Type:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Discount_Type__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Contract #</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Contract_Number__c}
+                    </td>
+                    <td>
+                        <b>End Customer:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.End_Customer__r.Name}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Order Type:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Order_Type__c}
+                    </td>
+                    <td>
+                        
+                    </td>
+                    <td>
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Contract Type:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Contract_Type__c}
+                    </td>
+                    <td>
+                        <b>Invoice Dest:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Invoice_Destination__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                       <b>Price Zone:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Price_Zone__c}
+                    </td>
+                    <td>
+                        <b>Opportunity #:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Opportunity__r.Name}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Admin Fee:</b>
+                    </td>
+                    <td>
+                        <apex:outputText rendered="{!IF(spaHeaderData.Administration_Fee_Override__c != null, true, false)}">
+                            {!spaHeaderData.Administration_Fee_Override__c}
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(spaHeaderData.Administration_Fee_Override__c == null, true, false)}">
+                            {!spaHeaderData.Administration_Fee__c}
+                        </apex:outputText>
+                    </td>
+                    <td>
+                       <b>P/Terms:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Payment_Terms__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>SPIFF Eligible:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.SPIFF_Eligible__c}
+                    </td>
+                    <td>
+                        <b>FOB:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Freight_On_Board__c}
+                    </td>
+                </tr>
+                <tr>                    
+                    <td>
+                        <b>Split SPIFF</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Split_SPIFF__c}
+                    </td>
+                    <td>
+                        <b>SPIFF To Dealer:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.SPIFF_To_Dealer__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Dealer Contact 1:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Dealer_Contact_1__r.Name}
+                    </td>
+                    <td>
+                        <b>Currency:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Currency__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Dealer Contact 2:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Dealer_Contact_2__r.Name}
+                    </td>
+                    <td>
+                        <b>Sales Person:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Primary_Sales_Person__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Dealer Contact 3:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Dealer_Contact_3__r.Name}
+                    </td>
+                    <td>
+                        <b>Rep Group:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Rep_Group__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Other Contact 1:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Other_Contact_1__r.Name}
+                    </td>
+                    <td>
+                        <b>Rep Employee:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Rep_Group_Employee__c}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Other Contact 2:</b>
+                    </td>
+                    <td>
+                        {!spaHeaderData.Other_Contact_1__r.Name}
+                    </td>
+                    <td>
+                        
+                    </td>
+                    <td>
+                        
+                    </td>
+                </tr>
+            </table>
+            <br/><br/><br/><br/><br/><br/><br/><br/>
+            <apex:outputPanel rendered="{!IF(discountType == 'Products', true, false)}">
+                <apex:outputPanel id="datePanel1" rendered="{!isDealer}"> 
+                    <table style="width:100%;border:1px solid black;" class="spa-header-detail" cellspacing="10" cellpadding="5">
+                        <tr>
+                            <th style="width:50%;">
+                                Product Families with Items
+                            </th>
+                            <th style="width:10%;">
+                                End User %
+                                
+                            </th>
+                            <th style="width:10%;">
+                                Dealer %
+                                
+                            </th>
+                            <th style="width:10%;">
+                                Dealer SPIFF
+                            </th>
+                            <th style="width:10%;">
+                                Other SPIFF
+                            </th>
+                            <th style="width:10%;">
+                                DSF %
+                            </th>
+                        </tr>
+                        <apex:repeat value="{!spaLines}" var="eachSPALine">
+                            <tr>
+                                <td>
+                                    {!eachSPALine.Name}
+                                </td>
+                                <td>
+                                    {!eachSPALine.End_User_Discount_Percentage__c}
+                                </td>
+                                <td>
+                                    {!eachSPALine.Dealer_Discount_Percentage__c}
+                                </td>
+                                <td>
+                                    {!eachSPALine.Dealer_SPIFF_Percentage__c}
+                                </td>
+                                <td>
+                                    {!eachSPALine.Other_SPIFF_Percentage__c}
+                                </td>
+                                <td>
+                                    {!eachSPALine.Dealer_Services_Fee__c}
+                                </td>
+                            </tr>
+                        </apex:repeat>
+                        
+                    </table>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!NOT(isDealer)}"> 
+                    <table style="width:100%;border:1px solid black;" class="spa-header-detail" cellspacing="10" cellpadding="5">
+                        <tr>
+                            <th style="width:40%;">
+                                Product Families with Items
+                            </th>
+                            <th style="width:10%;">
+                                End User %
+                                
+                            </th>
+                            <th style="width:10%;">
+                                Dealer %
+                                
+                            </th>
+                            <th style="width:10%;">
+                                Dealer SPIFF
+                            </th>
+                            <th style="width:10%;">
+                                Other SPIFF
+                            </th>
+                            <th style="width:10%;">
+                                DSF %
+                            </th>
+                            <th style="width:10%;">
+                                Rep Com %
+                            </th>
+                        </tr>
+                        <apex:repeat value="{!spaLines}" var="eachSPALine">
+                            <tr>
+                                <td>
+                                    {!eachSPALine.Name}
+                                </td>
+                                <td>
+                                    {!eachSPALine.End_User_Discount_Percentage__c}
+                                </td>
+                                <td>
+                                    {!eachSPALine.Dealer_Discount_Percentage__c}
+                                </td>
+                                <td>
+                                    {!eachSPALine.Dealer_SPIFF_Percentage__c}
+                                </td>
+                                <td>
+                                    {!eachSPALine.Other_SPIFF_Percentage__c}
+                                </td>
+                                <td>
+                                    {!eachSPALine.Dealer_Services_Fee__c}
+                                </td>
+                                <td>
+                                    {!eachSPALine.Rep_Commission__c}
+                                </td>
+                            </tr>
+                        </apex:repeat>
+                        
+                    </table>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!IF(discountType == 'Tiered Products', true, false)}">
+                <apex:outputPanel rendered="{!isDealer}"> 
+                    <table style="width:100%;border:1px solid black;" class="spa-header-detail" cellspacing="10" cellpadding="5">
+                        <tr>
+                            <th style="width:30%;">
+                                Discount Group with Items
+                            </th>
+                            <th  style="width:10%;">
+                                Start Range
+                            </th>
+                            <th style="width:10%;">
+                                End Range
+                            </th>
+                            <th style="width:10%;">
+                                End User %
+                                
+                            </th>
+                            <th style="width:10%;">
+                                Dealer %
+                                
+                            </th>
+                            <th style="width:10%;">
+                                Dealer SPIFF
+                            </th>
+                            <th style="width:10%;">
+                                Other SPIFF
+                            </th>
+                            <th style="width:10%;">
+                                DSF %
+                            </th>
+                        </tr>
+                        <apex:repeat value="{!sapTieredProducts}" var="eachGroup">
+                            <tr>
+                                <td>
+                                    {!eachGroup.Group_Name__c}
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                            </tr>
+                            <apex:repeat value="{!eachGroup.SPA_Discount_Group_Ranges__r}" var="eachGroupRange">
+                                <apex:repeat value="{!eachGroupRange.SPA_Lines__r}" var="eachSPALine">
+                                    <tr>
+                                        <td>
+                                            {!eachSPALine.Name}
+                                        </td>
+                                        <td>
+                                            {!eachGroupRange.Amount_Range_From__c}
+                                        </td>
+                                        <td>
+                                            {!eachGroupRange.Amount_Range_To__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.End_User_Discount_Percentage__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Dealer_Discount_Percentage__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Dealer_SPIFF_Percentage__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Other_SPIFF_Percentage__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Dealer_Services_Fee__c}
+                                        </td>
+                                    </tr>
+                                </apex:repeat>
+                            </apex:repeat>
+                        </apex:repeat>
+                    </table>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!NOT(isDealer)}"> 
+                    <table style="width:100%;border:1px solid black;" class="spa-header-detail" cellspacing="10" cellpadding="5">
+                        <tr>
+                            <th style="width:20%;">
+                                Discount Group with Items
+                            </th>
+                            <th  style="width:10%;">
+                                Start Range
+                            </th>
+                            <th style="width:10%;">
+                                End Range
+                            </th>
+                            <th style="width:10%;">
+                                End User %
+                                
+                            </th>
+                            <th style="width:10%;">
+                                Dealer %
+                                
+                            </th>
+                            <th style="width:10%;">
+                                Dealer SPIFF
+                            </th>
+                            <th style="width:10%;">
+                                Other SPIFF
+                            </th>
+                            <th style="width:10%;">
+                                DSF %
+                            </th>
+                            <th style="width:10%;">
+                                Rep Com %
+                            </th>
+                        </tr>
+                        <apex:repeat value="{!sapTieredProducts}" var="eachGroup">
+                            <tr>
+                                <td>
+                                    {!eachGroup.Group_Name__c}
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                            </tr>
+                            <apex:repeat value="{!eachGroup.SPA_Discount_Group_Ranges__r}" var="eachGroupRange">
+                                <apex:repeat value="{!eachGroupRange.SPA_Lines__r}" var="eachSPALine">
+                                    <tr>
+                                        <td>
+                                            {!eachSPALine.Name}
+                                        </td>
+                                        <td>
+                                            {!eachGroupRange.Amount_Range_From__c}
+                                        </td>
+                                        <td>
+                                            {!eachGroupRange.Amount_Range_To__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.End_User_Discount_Percentage__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Dealer_Discount_Percentage__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Dealer_SPIFF_Percentage__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Other_SPIFF_Percentage__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Dealer_Services_Fee__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Rep_Commission__c}
+                                        </td>
+                                    </tr>
+                                </apex:repeat>
+                            </apex:repeat>
+                        </apex:repeat>
+                    </table>
+                </apex:outputPanel>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!IF(discountType == 'Tiered', true, false)}"> 
+                    <table class="tableClass" style="width:100%;border:0px solid black;border-collapse: collapse;width:100%;font-size: 16px;margin-top:20px; ">
+                        <thead style="border-collapse: collapse;">
+                            <tr>
+                                <td style="border:black 0.5px solid;border-bottom:none;width:200px;text-align:center;"><b>Discount Group with Lines</b></td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;width:30px;text-align:center;"><b>Start Range</b></td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;width:30px;text-align:center;"><b>End Range</b></td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;width:30px;text-align:center;"><b>End User %</b></td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;width:30px;text-align:center;"><b>Dealer %</b></td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;width:30px;text-align:center;"><b>Dealer SPIFF Amt </b> </td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;width:30px;text-align:center;"><b>Other SPIFF Amt </b> </td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;width:30px;text-align:center;"><b>DSF %</b></td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;width:30px;text-align:center;"><b>Rep Com %</b></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           <apex:repeat value="{!discountGroupIdSpaLineRecordMap}" var="key">                        
+                        <tr style="font-size:16px;">
+                            <td style="border:black 0.5px solid;border-bottom:none;border-top:none;padding-left:3px;"><b>{!key}</b></td>
+                            <td style="border:black 0.5px solid;border-bottom:none;border-top:none;"></td>
+                            <td style="border:black 0.5px solid;border-bottom:none;border-top:none;"></td>
+                            <td style="border:black 0.5px solid;border-bottom:none;border-top:none;"></td>
+                            <td style="border:black 0.5px solid;border-bottom:none;border-top:none;"></td>
+                            <td style="border:black 0.5px solid;border-bottom:none;border-top:none;"></td>
+                            <td style="border:black 0.5px solid;border-bottom:none;border-top:none;"></td>
+                            <td style="border:black 0.5px solid;border-bottom:none;border-top:none;"></td>
+                            <td style="border:black 0.5px solid;border-bottom:none;border-top:none;"></td>
+                        </tr>
+                        <apex:repeat value="{!discountGroupIdSpaLineRecordMap[key]}" var="spaLine">  
+                            <apex:repeat value="{!spaLine}" var="spaLine1">  
+                                <tr style="font-size:16px;">
+                                    <td style="border:black 0.5px solid;border-bottom:none;border-top:none;padding-left:8px;">{!spaLine1.Name}</td>
+                                    <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.SPA_Discount_Group_Range__r.Amount_Range_From__c}</td>
+                                	<td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.SPA_Discount_Group_Range__r.Amount_Range_To__c}</td>
+                                    <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.End_User_Discount_Percentage__c}</td>
+                                    <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.Dealer_Discount_Percentage__c}</td>
+                                    <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.Dealer_SPIFF_Unit_Amount__c}</td>
+                                    <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.Other_SPIFF_Unit_Amount__c}</td>
+                                    <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.Dealer_Services_Fee__c}</td>
+                                    <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.Rep_Commission__c}</td>
+                                </tr>
+                            </apex:repeat>
+                        </apex:repeat>                        
+                    </apex:repeat>
+                    <tr>
+                        <td colspan="9" style="border-top:black 0.5px solid;"></td>
+                    </tr>
+                        </tbody>
+                    </table>
+        <!--        <apex:outputPanel rendered="{!NOT(isDealer)}"> 
+                    <table style="width:100%;border:1px solid black;" class="spa-header-detail" cellspacing="10" cellpadding="5">
+                        <tr>
+                            <th style="width:54%;">
+                                Discount Group with Items
+                            </th>
+                            <th  style="width:6%;">
+                                Start Range
+                            </th>
+                            <th style="width:6%;">
+                                End Range
+                            </th>
+                            <th style="width:6%;">
+                                End User %
+                                
+                            </th>
+                            <th style="width:6%;">
+                                Dealer %
+                                
+                            </th>
+                            <th style="width:6%;">
+                                Dealer SPIFF
+                            </th>
+                            <th style="width:6%;">
+                                Other SPIFF
+                            </th>
+                            <th style="width:6%;">
+                                DSF %
+                            </th>
+                            <th style="width:6%;">
+                                Rep Com %
+                            </th>
+                        </tr>
+                        <apex:repeat value="{!sapTieredItems}" var="eachGroup">
+                            <tr>
+                                <td>
+                                    {!eachGroup.Group_Name__c}
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    
+                                </td>
+                            </tr>
+                            <apex:repeat value="{!eachGroup.SPA_Discount_Group_Ranges__r}" var="eachGroupRange">
+                                <apex:repeat value="{!eachGroupRange.SPA_Lines__r}" var="eachSPALine">
+                                    <tr>
+                                        <td>
+                                            {!eachSPALine.Name}
+                                        </td>
+                                        <td>
+                                            {!eachGroupRange.Amount_Range_From__c}
+                                        </td>
+                                        <td>
+                                            {!eachGroupRange.Amount_Range_To__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.End_User_Discount_Percentage__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Dealer_Discount_Percentage__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Dealer_SPIFF_Percentage__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Other_SPIFF_Percentage__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Dealer_Services_Fee__c}
+                                        </td>
+                                        <td>
+                                            {!eachSPALine.Rep_Commission__c}
+                                        </td>
+                                    </tr>
+                                </apex:repeat>
+                            </apex:repeat>
+                        </apex:repeat>
+                    </table>
+                </apex:outputPanel>  -->
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!IF(discountType == 'Single', true, false)}">
+               <table class="tableClass" style="width:100%;border:0px solid black;border-collapse: collapse;width:100%;font-size: 16px;margin-top:20px;text-align:center; ">
+                    <thead style="border-collapse: collapse;">
+                        <tr >
+                            <td style="border:black 0.5px solid;border-bottom:none;text-align:center;width:210px;"><b>Product Families</b></td>
+                            <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;width:50px;"><b>End User %</b></td>
+                            <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;width:50px;"><b>Dealer %</b></td>
+                            <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;width:50px;"><b>Dealer SPIFF Amt</b></td>
+                            <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;width:50px;"><b>Other SPIFF Amt</b></td>
+                            <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;width:50px;"><b>DSF % </b></td>
+                            <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;width:50px;"><b>Rep Com %</b></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <apex:repeat value="{!spaFamilyRecordList}" var="co">
+                            <tr>
+                                <td style="border:black 0.5px solid;border-bottom:none;border-top:none;padding: 5px;">{!co.Name}</td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:none;padding-left: 10px;">{!co.End_User_Discount_Percentage__c}</td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:none;padding-left: 10px;">{!co.Dealer_Discount_Percentage__c}</td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:none;padding-left: 10px;">{!co.Dealer_SPIFF_Percentage__c}</td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:none;padding-left: 10px;">{!co.Other_SPIFF_Percentage__c}</td>
+                                <td style="border-right:black 0.5px solid;border-bottom:none;border-top:none;padding-left: 10px;">{!co.Dealer_Services_Fee__c}</td>
+                                <td style="border-right:black 0.5px solid;padding-left: 10px;">{!co.Rep_Commission__c}</td>
+                            </tr>
+                        </apex:repeat>
+                        <tr>
+                            <td colspan="7" style="border-top:black 0.5px solid;"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            
+                <table class="tableClass" style="width:100%;border:0px solid black;border-collapse: collapse;width:100%;font-size: 16px;margin-top:35px; ">
+                    <thead >
+                        <tr>
+                            <td style="border:black 0.5px solid;border-bottom:none;text-align:center;width:283px;"><b>Product Families with Lines</b></td>
+                            <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;width:81px;"><b>End User %</b></td>
+                            <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;width:74px;"><b>Dealer %</b></td>
+                  <!--          <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;width:75px;"><b>Dealer SPIFF %</b></td> -->
+                            <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;word-wrap:break-word;width:83px;"><b>Dealer SPIFF Amt</b> </td>
+                 <!--           <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;width:50px;"><b>Other SPIFF %</b></td>  -->
+                            <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;word-wrap:break-word;width:86px;"><b>Other SPIFF Amt</b></td>
+                            <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;width:80px;"><b>DSF %</b></td>
+                            <td style="border-right:black 0.5px solid;border-bottom:none;border-top:black 0.5px solid;text-align:center;width:80px;"><b>Rep Com %</b></td>                           
+                        </tr>
+                    </thead>
+                    <tbody>       
+                        <apex:repeat value="{!familyIdSpaLineRecordMap}" var="key">                        
+                            <tr style="font-size:16px;margin-top:100px;">
+                                <td style="border:black 0.5px solid;border-bottom:none;border-top:none;padding: 3px;"><b>{!key}</b></td>
+                             <!--   <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;"></td>
+                                <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;"></td>-->
+                                <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;"></td> 
+                                <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;"></td>
+                                <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;"></td>
+                                <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;"></td>
+                                <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;"></td>
+                                <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;"></td>
+                            </tr>
+                            <apex:repeat value="{!familyIdSpaLineRecordMap[key]}" var="spaLine">  
+                                <apex:repeat value="{!spaLine}" var="spaLine1">  
+                                    <tr style="font-size:16px;">
+                                        <td style="border:black 0.5px solid;border-bottom:none;border-top:none;padding-left:8px;">{!spaLine1.Name}</td>
+                                        <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.End_User_Discount_Percentage__c}</td>
+                                        <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.Dealer_Discount_Percentage__c}</td>
+                             <!---           <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.Dealer_SPIFF_Percentage__c}</td>  -->
+                                        <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.Dealer_SPIFF_Unit_Amount__c}</td>
+                           <!--             <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.Other_SPIFF_Percentage__c}</td> -->
+                                        <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.Other_SPIFF_Unit_Amount__c}</td>
+                                        <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.Rep_Commission__c}</td>
+                                        <td style="border:black 0.5px solid;border-bottom:none;border-top:none;text-align:center;">{!spaLine1.Dealer_Services_Fee__c}</td>
+                                        
+                                    </tr>
+                                </apex:repeat>
+                            </apex:repeat>                        
+                        </apex:repeat>
+                        <tr>
+                            <td colspan="9" style="border-top:black 0.5px solid;"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </apex:outputPanel>
+        </body>
+    </html>
+</apex:page>
