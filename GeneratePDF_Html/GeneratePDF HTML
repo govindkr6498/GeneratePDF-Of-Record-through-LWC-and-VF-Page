@@ -1,0 +1,10 @@
+<template>
+    <lightning-card title="Download PDF">
+        <lightning-layout>
+            <div class="slds-p-around_small" >                
+                <span class="slds-hide">{recordId}</span>
+                <lightning-spinner alternative-text="Loading" size="x-small" if:true={showLoader}></lightning-spinner>          
+            </div>
+        </lightning-layout>
+    </lightning-card>
+</template>
