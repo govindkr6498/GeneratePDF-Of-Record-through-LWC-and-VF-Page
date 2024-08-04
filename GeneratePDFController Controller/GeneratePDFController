@@ -1,0 +1,119 @@
+public with sharing class GeneratePDFController {
+    @AuraEnabled 
+    public static String getPdfFileAsBase64String(String spaHeaderId) {
+        SPA_Header__c spData =  [
+            SELECT Id, Name, Project_Name__c, Effective_Start_Date__c, Effective_End_Date__c, 
+            Contract_Number__c, End_Customer__r.Name, Order_Type__c, SPIFF_To_Dealer__c, Contract_Type__c, 
+            Invoice_Destination__c, Price_Zone__c, Opportunity__r.Name, Administration_Fee__c, Discount_Type__c, 
+            Administration_Fee_Override__c, Payment_Terms__c, SPIFF_Eligible__c, Freight_On_Board__c, 
+            Split_SPIFF__c, Currency__c, Dealer_Contact_1__r.Name, Primary_Sales_Person__c, 
+            Dealer_Contact_2__r.Name, Dealer_Contact_3__r.Name, Rep_Group__c, 
+            Rep_Group_Employee__c, Other_Contact_1__r.Name, Other_Contact_2__r.Name 
+            FROM SPA_Header__c 
+            WHERE Id =:spaHeaderId
+        ];
+        List<String> spaTitles = new List<String>{'SPA-'+spData.Name,'SPA-'+spData.Name+'D'};
+        List<ContentDocumentLink> existingCdls = new List<ContentDocumentLink>([
+            Select Id, ContentDocumentId, ContentDocument.Title 
+            from ContentDocumentLink
+            where LinkedEntityId =:spaHeaderId
+            AND  ContentDocument.Title IN :spaTitles
+        ]);
+        String dealerCdlId = null;
+        String normalCdlId = null;
+        if (existingCdls != null && existingCdls.size() > 0) {
+            for (ContentDocumentLink eachCdl : existingCdls) {
+                if (eachCdl.ContentDocument.Title == 'SPA-'+spData.Name) {
+                    normalCdlId = eachCdl.ContentDocumentId;
+                } else if (eachCdl.ContentDocument.Title == 'SPA-'+spData.Name+'D') {
+                    dealerCdlId = eachCdl.ContentDocumentId;
+                }
+            }
+        }
+        createDealerPDF(spData, dealerCdlId);
+        createPDF(spData, normalCdlId);
+        return 'true';
+    }
+    public static void createPDF(SPA_Header__c spData, String contentDocId) {       
+        PageReference pdfPage = Page.SPAProducts;
+        // if(spData.Discount_Type__c == 'Single'){
+        //     pdfPage = Page.SPALinePage;
+        // }else if(spData.Discount_Type__c == 'Tiered'){
+        //     pdfPage = Page.SPADiscountGroupPage;
+        // }    
+        pdfPage.getParameters().put('spaHeaderId', spData.Id);
+        pdfPage.getParameters().put('discountType', spData.Discount_Type__c);
+        System.debug('spData.Discount_Type__c : '+spData.Discount_Type__c);
+        Blob pdfBlob = pdfPage.getContent();
+        if (contentDocId != null) {
+            ContentVersion fileToUpload = new ContentVersion();
+            fileToUpload.ContentLocation = 'S';
+            fileToUpload.PathOnClient ='SPA-'+spData.Name+'.pdf';
+            fileToUpload.Title = 'SPA-'+spData.Name;
+            fileToUpload.ContentDocumentId = contentDocId;
+            fileToUpload.VersionData = pdfBlob;
+            Database.SaveResult saveResult;
+            saveResult = Database.insert(fileToUpload);
+        } else {
+            ContentVersion fileToUpload = new ContentVersion();
+            fileToUpload.ContentLocation = 'S';
+            fileToUpload.PathOnClient ='SPA-'+spData.Name+'.pdf';
+            fileToUpload.Title = 'SPA-'+spData.Name;
+            fileToUpload.VersionData = pdfBlob;
+            Database.SaveResult saveResult;
+            try {
+                saveResult = Database.insert(fileToUpload);
+                Id contentDocumentId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id =:fileToUpload.Id].ContentDocumentId;
+                //Create ContentDocumentLink
+                ContentDocumentLink linkToRecord = new ContentDocumentLink();
+                linkToRecord.ContentDocumentId = contentDocumentId;
+                linkToRecord.LinkedEntityId = spData.Id; // RecordID of the patent
+                linkToRecord.ShareType = 'I'; // Inferred permission
+                insert linkToRecord;
+            } catch (DmlException DMLE) {
+                System.debug('Failed to insert fileToUpload, error is: ' + dmle.getMessage());
+            }
+        }
+    }
+    public static void createDealerPDF(SPA_Header__c spData, String contentDocId) {
+        PageReference pdfPage = Page.SPAProducts;
+        /*if(spData.Discount_Type__c == 'Single'){
+            pdfPage = Page.SPALinePage;
+        }else if(spData.Discount_Type__c == 'Tiered'){
+            pdfPage = Page.SPADiscountGroupPage;
+        }*/
+        pdfPage.getParameters().put('spaHeaderId', spData.Id);
+        pdfPage.getParameters().put('discountType', spData.Discount_Type__c);
+        pdfPage.getParameters().put('type', 'dealer');
+        Blob pdfBlob = pdfPage.getContent();
+        if (contentDocId != null) {
+            ContentVersion fileToUpload = new ContentVersion();
+            fileToUpload.ContentLocation = 'S';
+            fileToUpload.PathOnClient ='SPA-'+spData.Name+'D.pdf';
+            fileToUpload.Title = 'SPA-'+spData.Name+'D';
+            fileToUpload.ContentDocumentId = contentDocId;
+            fileToUpload.VersionData = pdfBlob;
+            Database.SaveResult saveResult;
+            saveResult = Database.insert(fileToUpload);
+        } else {
+            ContentVersion fileToUpload = new ContentVersion();
+            fileToUpload.ContentLocation = 'S';
+            fileToUpload.PathOnClient ='SPA-'+spData.Name+'D.pdf';
+            fileToUpload.Title = 'SPA-'+spData.Name+'D';
+            fileToUpload.VersionData = pdfBlob;
+            Database.SaveResult saveResult;
+            try {
+                saveResult = Database.insert(fileToUpload);
+            } catch (DmlException DMLE) {
+                System.debug('Failed to insert fileToUpload, error is: ' + dmle.getMessage());
+            }
+            Id contentDocumentId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id =:fileToUpload.Id].ContentDocumentId;
+            //Create ContentDocumentLink
+            ContentDocumentLink linkToRecord = new ContentDocumentLink();
+            linkToRecord.ContentDocumentId = contentDocumentId;
+            linkToRecord.LinkedEntityId = spData.Id; // RecordID of the patent
+            linkToRecord.ShareType = 'I'; // Inferred permission
+            insert linkToRecord;
+        }
+    }
+}
