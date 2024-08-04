@@ -1,0 +1,39 @@
+import { LightningElement, api, wire } from 'lwc';
+import downloadPDF from '@salesforce/apex/GeneratePDFController.getPdfFileAsBase64String';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { CloseActionScreenEvent } from 'lightning/actions';
+export default class GeneratePDF extends LightningElement {
+    @api recordId;
+    boolShowSpinner = false;
+    showLoader = true;
+    pdfString;
+    renderedCallback() {
+        if (this.recordId && !this.boolShowSpinner) {
+            this.generatePdf();
+        }
+    }
+    generatePdf(){
+        this.boolShowSpinner = true;
+        downloadPDF({spaHeaderId : this.recordId}).then(response => {
+            console.log(response);
+            this.dispatchEvent(new CloseActionScreenEvent());
+            this.showLoader = false;
+            this.showNotification('Success!','PDFs created sucessfully.','success');
+            setTimeout(()=>{
+                location.reload();
+            },2500);
+        }).catch(error => {
+            this.showNotification('Error!',error.body.message,'error');
+            console.log('Error: ' +error.body.message);
+            this.showLoader = false;
+        });
+    }
+    showNotification(title , message , variant) {
+        const evt = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant,
+        });
+        this.dispatchEvent(evt);
+    }
+}
